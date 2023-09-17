@@ -86,6 +86,11 @@ all:
 
 else
 
+ifeq ($(ARCH),vita)
+VITA_LIBS = -lSceLibKernel_stub -lSceKernelThreadMgr_stub -lSceSysmem_stub -lSceIofilemgr_stub -lSceKernelModulemgr_stub -lSceProcessmgr_stub -lSceLibc_stub -lSceNet_stub
+SHARED_LIBS = lib/libc.suprx
+endif
+
 all: $(ALL_LIBS) $(ALL_TOOLS)
 
 OBJ_DIRS = $(sort $(patsubst %/,%,$(dir $(ALL_LIBS) $(ALL_TOOLS) $(ALL_OBJS) $(GENH) $(GENH_INT))) obj/include)
@@ -113,8 +118,9 @@ obj/crt/crt1.o obj/crt/scrt1.o obj/crt/rcrt1.o obj/ldso/dlstart.lo: $(srcdir)/ar
 
 obj/crt/rcrt1.o: $(srcdir)/ldso/dlstart.c
 
+ifneq ($(ARCH),vita)
 obj/crt/Scrt1.o obj/crt/rcrt1.o: CFLAGS_ALL += -fPIC
-
+endif
 OPTIMIZE_SRCS = $(wildcard $(OPTIMIZE_GLOBS:%=$(srcdir)/src/%))
 $(OPTIMIZE_SRCS:$(srcdir)/%.c=obj/%.o) $(OPTIMIZE_SRCS:$(srcdir)/%.c=obj/%.lo): CFLAGS += -O3
 
@@ -128,9 +134,9 @@ NOSSP_OBJS = $(CRT_OBJS) $(LDSO_OBJS) $(filter \
 $(NOSSP_OBJS) $(NOSSP_OBJS:%.o=%.lo): CFLAGS_ALL += $(CFLAGS_NOSSP)
 
 $(CRT_OBJS): CFLAGS_ALL += -DCRT
-
+ifneq ($(ARCH),vita)
 $(LOBJS) $(LDSO_OBJS): CFLAGS_ALL += -fPIC
-
+endif
 CC_CMD = $(CC) $(CFLAGS_ALL) -c -o $@ $<
 
 # Choose invocation of assembler to be used
@@ -157,6 +163,16 @@ obj/%.lo: $(srcdir)/%.S
 
 obj/%.lo: $(srcdir)/%.c $(GENH) $(IMPH)
 	$(CC_CMD)
+
+lib/libc.suprx: lib/libc.velf
+	vita-make-fself -c $< $@
+
+lib/libc.velf: lib/libc.elf
+	vita-elf-create -g lib/config.yml -m _dlstart,, -n $< $@
+
+lib/libc.elf: $(LOBJS) $(LDSO_OBJS)
+	$(CC) $(CFLAGS_ALL) $(LDFLAGS_ALL) -nostdlib \
+	-Wl,-q -Wl,-e,_dlstart -o $@ $(LOBJS) $(LDSO_OBJS) $(LIBCC) $(VITA_LIBS)
 
 lib/libc.so: $(LOBJS) $(LDSO_OBJS)
 	$(CC) $(CFLAGS_ALL) $(LDFLAGS_ALL) -nostdlib -shared \
