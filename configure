@@ -498,9 +498,10 @@ tryflag CFLAGS_AUTO -fno-asynchronous-unwind-tables
 # assembler even when one or more of the symbols involved is
 # replaceable. See gas pr 18561 and gcc pr 66609, 68178, etc.
 #
+if test "$ARCH" != "vita"; then
 tryflag CFLAGS_AUTO -ffunction-sections
 tryflag CFLAGS_AUTO -fdata-sections
-
+fi
 #
 # On x86, make sure we don't have incompatible instruction set
 # extensions enabled by default. This is bad for making static binaries.
@@ -577,8 +578,9 @@ tryldflag LDFLAGS_AUTO -Wl,--sort-common
 
 # When linking shared library, drop dummy weak definitions that were
 # replaced by strong definitions from other translation units.
+if test "$ARCH" != "vita"; then
 tryldflag LDFLAGS_AUTO -Wl,--gc-sections
-
+fi
 # Some patched GCC builds have these defaults messed up...
 tryldflag LDFLAGS_AUTO -Wl,--hash-style=both
 
