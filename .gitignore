@@ -7,6 +7,7 @@
 *.velf
 *.suprx
 *.yml
+lib/libc
 config.mak
 lib/musl-gcc.specs
 /obj/

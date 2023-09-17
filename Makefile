@@ -164,13 +164,13 @@ obj/%.lo: $(srcdir)/%.S
 obj/%.lo: $(srcdir)/%.c $(GENH) $(IMPH)
 	$(CC_CMD)
 
-lib/libc.suprx: lib/libc.velf
+lib/libc.suprx: lib/libc.velf vita-build-stubs
 	vita-make-fself -c $< $@
 
-lib/libc.velf: lib/libc.elf
+lib/libc.velf: lib/libc
 	vita-elf-create -g lib/config.yml -m _dlstart,, -n $< $@
 
-lib/libc.elf: $(LOBJS) $(LDSO_OBJS)
+lib/libc: $(LOBJS) $(LDSO_OBJS)
 	$(CC) $(CFLAGS_ALL) $(LDFLAGS_ALL) -nostdlib \
 	-Wl,-q -Wl,-e,_dlstart -o $@ $(LOBJS) $(LDSO_OBJS) $(LIBCC) $(VITA_LIBS)
 
@@ -227,6 +227,15 @@ $(DESTDIR)$(includedir)/%: $(srcdir)/include/%
 
 $(DESTDIR)$(LDSO_PATHNAME): $(DESTDIR)$(libdir)/libc.so
 	$(INSTALL) -D -l $(libdir)/libc.so $@ || true
+
+vita-build-stubs: vita-gen-stubs
+	cd lib/libc_stubs && make -j && find . -type f -not -name '*.a' -print0 | xargs -0 rm --
+
+vita-gen-stubs: vita-gen-imports
+	vita-libs-gen lib/imports.yml lib/libc_stubs
+
+vita-gen-imports: lib/libc.velf
+	vita-elf-export u lib/libc lib/config.yml lib/imports.yml
 
 install-libs: $(ALL_LIBS:lib/%=$(DESTDIR)$(libdir)/%) $(if $(SHARED_LIBS),$(DESTDIR)$(LDSO_PATHNAME),)
 
