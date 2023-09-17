@@ -4,7 +4,7 @@
 #include "features.h"
 #include <sys/syslimits.h>
 
-extern char __cwd[PATH_MAX];
+hidden extern char __cwd[PATH_MAX];
 
 hidden int __get_drive(const char *path);
 hidden void __init_cwd(void);

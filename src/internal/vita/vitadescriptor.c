@@ -16,7 +16,7 @@
 DescriptorTranslation *__fdmap[MAX_OPEN_FILES];
 DescriptorTranslation __fdmap_pool[MAX_OPEN_FILES];
 
-SceKernelLwMutexWork _musl_fd_mutex __attribute__((aligned(8)));
+hidden SceKernelLwMutexWork _musl_fd_mutex __attribute__((aligned(8)));
 
 void _init_fd(void)
 {

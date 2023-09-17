@@ -1,6 +1,8 @@
 #ifndef BRK_H
 #define BRK_H
 
-void *__vita_brk(void *addr);
+#include <features.h>
+
+hidden void *__vita_brk(void *addr);
 
 #endif

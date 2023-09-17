@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#include "features.h"
+#include <features.h>
 
 #define MAX_OPEN_FILES 256
 
@@ -25,7 +25,8 @@ typedef struct
     int flags;
 } DescriptorTranslation;
 
-extern DescriptorTranslation *__fdmap[];
+hidden extern DescriptorTranslation *__fdmap[];
+hidden extern DescriptorTranslation __fdmap_pool[];
 
 hidden void _init_fd(void);
 hidden void _free_fd(void);

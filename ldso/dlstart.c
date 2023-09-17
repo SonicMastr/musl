@@ -17,8 +17,8 @@
 	__asm__ __volatile__ ( "" : "+m"(static_func_ptr) : : "memory"); \
 	*(fp) = static_func_ptr; } while(0)
 #endif
-#ifdef __vita__
-hidden void _dlstart_vita_c(size_t *sp, size_t *dynv) // TODO: Make this Target specifc for the Vita (This is just going to crash. lol)
+#ifdef __vita__																//   V  We're not going to use this, but it's here for reference.
+hidden void _dlstart_vita_c(unsigned int args, char *argp, size_t *dynv, size_t *sp) // TODO: Make this Target specifc for the Vita (This is just going to crash. lol)
 #else
 hidden void _dlstart_c(size_t *sp, size_t *dynv)
 #endif
