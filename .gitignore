@@ -3,6 +3,10 @@
 *.a
 *.so
 *.so.1
+*.elf
+*.velf
+*.suprx
+*.yml
 config.mak
 lib/musl-gcc.specs
 /obj/
